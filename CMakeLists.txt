@@ -15,20 +15,20 @@ add_library(library SHARED library.cpp)
 # Custom command for generating Python bindings with SWIG
 add_custom_command(
   OUTPUT ${CMAKE_BINARY_DIR}/library_wrap.cxx ${CMAKE_BINARY_DIR}/library.py
-  COMMAND swig -python -c++ -o ${CMAKE_BINARY_DIR}/library_wrap.cxx -I${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/library.i
-  DEPENDS ${CMAKE_SOURCE_DIR}/library.i ${CMAKE_SOURCE_DIR}/library.h
+  COMMAND swig -python -c++ -o ${CMAKE_BINARY_DIR}/library_wrap.cxx -I${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/library_python.i
+  DEPENDS ${CMAKE_SOURCE_DIR}/library_python.i ${CMAKE_SOURCE_DIR}/library.h
 )
 
 # Create a target for the Python module
-add_library(_library MODULE ${CMAKE_BINARY_DIR}/library_wrap.cxx)
-target_link_libraries(_library ${PYTHON_LIBRARIES} library)
-set_target_properties(_library PROPERTIES PREFIX "")
+add_library(liblibrary_python MODULE ${CMAKE_BINARY_DIR}/library_wrap.cxx)
+target_link_libraries(liblibrary_python ${PYTHON_LIBRARIES} library)
+set_target_properties(liblibrary_python PROPERTIES PREFIX "")
 
 # Custom command for generating Tcl bindings with SWIG
 add_custom_command(
   OUTPUT ${CMAKE_BINARY_DIR}/library_tcl_wrap.cxx ${CMAKE_BINARY_DIR}/library.tcl
-  COMMAND swig -tcl -c++ -o ${CMAKE_BINARY_DIR}/library_tcl_wrap.cxx -I${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/library.i
-  DEPENDS ${CMAKE_SOURCE_DIR}/library.i ${CMAKE_SOURCE_DIR}/library.h
+  COMMAND swig -tcl -c++ -o ${CMAKE_BINARY_DIR}/library_tcl_wrap.cxx -I${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/library_tcl.i
+  DEPENDS ${CMAKE_SOURCE_DIR}/library_tcl.i ${CMAKE_SOURCE_DIR}/library.h
 )
 
 # Create a target for the Tcl module
@@ -46,5 +46,5 @@ add_custom_target(
 )
 
 # Ensure the Python and Tcl modules depend on the custom target
-add_dependencies(_library generate_bindings)
+add_dependencies(liblibrary_python generate_bindings)
 add_dependencies(liblibrary_tcl generate_bindings)
